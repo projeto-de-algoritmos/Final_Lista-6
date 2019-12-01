@@ -5,10 +5,6 @@ import matplotlib.pyplot as plt
 from networkx import nx
 from funcoesFinal import *
 
-df = pd.read_csv('2008.csv')
-df = df.drop_duplicates(subset=['Origin', 'Dest'], keep='first')
-df.to_json('Voos.json')
-
 with open('Voos.json') as json_file:
     data = json.load(json_file)
 
@@ -38,6 +34,10 @@ for aeroporto, rotas in listaDeAdjacencia.items():
     for rota in rotas:        
         G.add_edge(aeroporto, rota, weight = recupera_distancia(searchData, aeroporto, rota))
 
+labels['OGD'] = 'OGD'
+labels['CYS'] = 'CYS'
+
+
 prim, custo, pesos = executa_prim(G, 'ATL')
 print("Árvore Geradora Mínima pelo algoritmo de Prim")
 print(prim)
@@ -60,4 +60,16 @@ for no in G.nodes():
 
 fig1 = plt.figure('Árvore Geradora Miníma')
 nx.draw(G, labels = labels, pos = posicoesNo, edgelist = prim)
+plt.show()
+
+#-------------------------------------
+origem, destino = coleta_origem_e_destino()
+caminho, caminhoLegivel, distancia = dijkstra(G, origem, destino)
+print('\n\n\nMenor Caminho com Menor Custo (MCMC) - Dijkstra')
+print(caminhoLegivel)
+print('\n\n\nCusto total considerando as distâncias entre pontos')
+print(distancia)
+print("\n\n")
+fig2 = plt.figure('Menor Caminho com Menor Custo (MCMC) - Dijkstra')
+nx.draw(G, pos = posicoesNo, nodelist=caminho, labels = labels, font_size = 13)
 plt.show()
