@@ -1,5 +1,5 @@
 from pqdict import PQDict
-
+import time
 
 def recupera_distancia(searchData, aeroportoOrigem, aeroportoDestino):
     for dicionario in searchData:
@@ -45,7 +45,7 @@ def executa_prim(G, primeiro_no):
 def coleta_origem_e_destino():
     origem = str(input("Origem: "))
     destino = str(input("Destino: "))
-    
+
     return origem, destino
 
 def dijkstra(G, origem, destino, visitados = [], distancias = {}, predecessores = {}):
@@ -106,3 +106,80 @@ def dijkstra(G, origem, destino, visitados = [], distancias = {}, predecessores 
 
         # chama recursivo pro novo nó
     return dijkstra(G, novoNo, destino, visitados, distancias, predecessores)
+
+def coleta_capacidade_da_mala():
+    print("\033[0;32mO valor da capacidade deve ser um inteiro\033[0m")
+    capacidade = int(input("Qual é a capacidade da sua Mala(l): "))
+    capacidade = valida_capacidade(capacidade)
+
+    return capacidade
+    
+def valida_capacidade(capacidade):
+    while(capacidade <= 0):
+        print("Capacidade inválida! Digite um valor maior que 0 e inteiro!")
+        capacidade = int(input("Qual é a capacidade da sua Mala(l): "))
+    return capacidade   
+
+def executa_knapsack(itens, capacidade):
+    qtdTotalProdutos = len(itens)
+
+    tabelaKnapsack = [[0 for coluna in range(capacidade + 1)] for linha in range(qtdTotalProdutos + 1)]
+
+    for linha in range(qtdTotalProdutos + 1):
+        nomeItem = itens[linha-1][0]
+        valorItem = itens[linha-1][2]
+        pesoItem = itens[linha-1][3]
+        for coluna in range(capacidade + 1):
+            if linha == 0 or coluna == 0:
+                tabelaKnapsack[linha][coluna] = 0
+            elif pesoItem > coluna:
+                tabelaKnapsack[linha][coluna] = tabelaKnapsack[linha-1][coluna]
+            else:
+                # LEVAR / NAO LEVAR
+                tabelaKnapsack[linha][coluna] = max(tabelaKnapsack[linha-1][coluna], tabelaKnapsack[linha-1][coluna - pesoItem] + valorItem)
+
+
+    itensLevados = []
+    limite = capacidade
+    estahNoCaminhao = False
+    for linha in range(len(itens), 0, -1):
+        if(tabelaKnapsack[linha][limite] != tabelaKnapsack[linha-1][limite]):
+            estahNoCaminhao = True
+        
+        if estahNoCaminhao:
+            pesoItem = itens[linha-1][3]
+            itensLevados.append(itens[linha-1])
+            limite -= pesoItem
+
+    return tabelaKnapsack, itensLevados
+
+def exibe_menu_perfil():
+    print("==================== PERFIL ===================")
+    print("1 - Turista")
+    print("2 - Agência de viagens")
+    print("0 - Sair")
+    print("\nDigite o número correspondente a opção desejada")
+    perfil = captura_opcao(0, 2, "\n\n\033[1;94mQual é o seu perfil? \033[0m ")
+
+    return perfil
+
+def captura_opcao(min, max, mensagem):
+    opcao = int(input(mensagem))
+    while(opcao < int(min) or opcao > int(max)):
+        print("Opção inválida! Por favor, digite novamente!")
+        opcao = int(input(mensagem))
+    return opcao
+
+def iniciar_programa():
+    print("\033[1;35mSeu ajudante de viagem está carregando...\033[0m ")
+    time.sleep(1.5)
+
+def exibe_menu_agencia_de_viagens():
+    print("===================== MENU PARA AGÊNCIA DE VIAGENS ==============================")
+    print("1 - Visualizar menor custo para ligar todos os aeroportos")
+    print("2 - Consultar rotas com menor caminho e custo")
+    print("0 - Voltar a seleção de perfil")
+    opcao = captura_opcao(0, 2, "\n\nQual opção deseja realizar? ")
+
+    return opcao
+
