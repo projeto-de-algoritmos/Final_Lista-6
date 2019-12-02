@@ -84,7 +84,7 @@ def dijkstra(G, origem, destino, visitados = [], distancias = {}, predecessores 
         for vizinho in G[origem] :
             # Confere se o vizinho não foi visitado
             if vizinho not in visitados:
-                # print(distancias[origem])
+                # print(G[origem])
                 # print(G[origem][vizinho])
                 nova_distancia = distancias[origem] + G[origem][vizinho]['weight'] # Guarda a soma da distância armazenada no nó de origem mais a do novo nó
                 # float('inf') -> funciona como se fosse um valor infinito
@@ -120,15 +120,24 @@ def valida_capacidade(capacidade):
         capacidade = int(input("Qual é a capacidade da sua Mala(l): "))
     return capacidade   
 
-def executa_knapsack(itens, capacidade):
+def executa_knapsack(itens, capacidade, searchData, origem, destino):
     qtdTotalProdutos = len(itens)
 
     tabelaKnapsack = [[0 for coluna in range(capacidade + 1)] for linha in range(qtdTotalProdutos + 1)]
 
     for linha in range(qtdTotalProdutos + 1):
         nomeItem = itens[linha-1][0]
-        valorItem = itens[linha-1][2]
-        pesoItem = itens[linha-1][3]
+        pesoItem = itens[linha-1][1]
+        if (recupera_valor(searchData,origem,destino) == "InteriorFrio"):
+            valorItem = itens[linha-1][2]
+        elif (recupera_valor(searchData,origem,destino) == "InteriorCalor"):
+            valorItem = itens[linha-1][3]
+        elif (recupera_valor(searchData,origem,destino) == "LitoralCalor"):
+            valorItem = itens[linha-1][4]
+        elif (recupera_valor(searchData,origem,destino) == "LitoralFrio"):
+            valorItem = itens[linha-1][5]
+        
+        print(recupera_valor(searchData,origem,destino))
         for coluna in range(capacidade + 1):
             if linha == 0 or coluna == 0:
                 tabelaKnapsack[linha][coluna] = 0
@@ -141,17 +150,31 @@ def executa_knapsack(itens, capacidade):
 
     itensLevados = []
     limite = capacidade
-    estahNoCaminhao = False
     for linha in range(len(itens), 0, -1):
+        estaNaMala = False
+        # print(linha)
+        # print(limite)
         if(tabelaKnapsack[linha][limite] != tabelaKnapsack[linha-1][limite]):
-            estahNoCaminhao = True
+            estaNaMala = True
         
-        if estahNoCaminhao:
-            pesoItem = itens[linha-1][3]
+        if estaNaMala:
+            pesoItem = itens[linha-1][1]
             itensLevados.append(itens[linha-1])
             limite -= pesoItem
 
     return tabelaKnapsack, itensLevados
+
+def monta_tupla(data):
+    itens = []
+    for item in data:
+        itens.append((item['Nome'], item['Peso'], item['ValorInteriorFrio'], item['ValorInteriorQuente'], item['ValorLitoralQuente'], item['ValorLitoralFrio']))
+    return itens
+
+def recupera_valor(searchData,aeroportoOrigem,aeroportoDestino):
+    for dicionario in searchData:
+        if aeroportoOrigem == dicionario['Origin'] and \
+            aeroportoDestino == dicionario['Dest']:
+            return dicionario['TypeDest']
 
 def exibe_menu_perfil():
     print("==================== PERFIL ===================")

@@ -12,6 +12,9 @@ def main():
 
     with open('VoosLinhaUnica.json') as json_file:
         searchData = json.load(json_file)
+    
+    with open('objetos.json') as json_file:
+        objetoshData = json.load(json_file)
 
     listaDeAdjacencia = {}
     listaAeroportos = []
@@ -75,7 +78,34 @@ def main():
             print("\033[0;32mVamos arrumar as malas! \033[0m")
             time.sleep(0.5)
             capacidadeMala = coleta_capacidade_da_mala()
-            # executa_knapsack(itens, capacidadeMala)
+            itens = monta_tupla(objetoshData)
+            tabelaKnapsack, itensLevados = executa_knapsack(itens, capacidadeMala, searchData, origem, destino)
+            print("================ TABELA KNAPSACK ITERATIVA ========================")
+            print(" | ", end="")
+            for i in range(0, capacidadeMala+1):
+                print(i, end="\t")
+            print()
+            i = 0
+            for linha in tabelaKnapsack:
+                print(i, end="| ")
+                for coluna in linha:
+                    print(coluna, end="\t")
+                print()
+                i += 1
+            print("\n\n\033[0;32mLista de itens levados: \033[0m") 
+            for i in range(0, len(itensLevados)):
+                print("Nome do produto: ", itensLevados[i][0])
+                print("Peso: ", itensLevados[i][1])
+                if (recupera_valor(searchData,origem,destino) == "InteriorFrio"):
+                    print("Valor: ", itensLevados[i][2])
+                elif (recupera_valor(searchData,origem,destino) == "InteriorCalor"):
+                    print("Valor: ", itensLevados[i][3])
+                elif (recupera_valor(searchData,origem,destino) == "LitoralCalor"):
+                    print("Valor: ", itensLevados[i][4])
+                elif (recupera_valor(searchData,origem,destino) == "LitoralFrio"):
+                    print("Valor: ", itensLevados[i][5])
+                print("-------------------")
+            input("Pressione qualquer tecla para retornar ao menu... ")
 
         elif perfil == 2:
             while True:
