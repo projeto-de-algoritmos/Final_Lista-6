@@ -1,7 +1,7 @@
 # NomedoProjeto
 
 **Número da Lista**: 6<br>
-**Conteúdo da Disciplina**: XXXXXXXXXX<br>
+**Conteúdo da Disciplina**: Final<br>
 
 ## Alunos
 |Matrícula | Aluno |
